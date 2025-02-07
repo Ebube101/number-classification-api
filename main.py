@@ -51,3 +51,17 @@ async def classify_number(number: int = Query(..., description="The number to cl
         "digit_sum": sum(int(d) for d in str(number)),
         "fun_fact": get_fun_fact(number)
     }
+
+import os
+import uvicorn
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+def read_root():
+    return {"message": "API is working!"}
+
+if __name__ == "__main__":
+    port = int(os.getenv("PORT", 8000))  # Railway provides a dynamic port
+    uvicorn.run(app, host="0.0.0.0", port=port)
