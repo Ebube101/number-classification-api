@@ -1,7 +1,17 @@
 from fastapi import FastAPI, Query
+from fastapi.middleware.cors import CORSMiddleware
 import math
 
 app = FastAPI()
+
+# Enable CORS for all origins (modify this in production)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow requests from any domain (change in production)
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods
+    allow_headers=["*"],  # Allow all headers
+)
 
 def is_prime(n: int) -> bool:
     """Check if a number is prime."""
