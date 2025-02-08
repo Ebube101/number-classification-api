@@ -1,131 +1,221 @@
-# Number Classification API
+Number Classification API
 
-This is a FastAPI-based web service that classifies numbers based on their mathematical properties. It determines whether a given number is **prime**, **perfect**, or an **Armstrong number** and provides additional information such as the sum of its digits and a fun fact.
+This Number Classification API is a Python-based application that classifies numbers by calculating their mathematical properties, such as whether they are prime, perfect, Armstrong, even, or odd. The API also retrieves a fun fact about the number from the Numbers API. It is built using the Flask framework and deployed on an AWS EC2 instance for public access.
+🚀 Features
 
-## Features
-- ✅ Check if a number is **prime**  
-- ✅ Check if a number is **perfect**  
-- ✅ Check if a number is an **Armstrong number**  
-- ✅ Calculate the sum of digits  
-- ✅ Provide a **fun fact** about the number  
-- ✅ CORS enabled for cross-origin requests  
-- ✅ Interactive API documentation via Swagger UI  
+    Classifies numbers as prime, perfect, Armstrong, even, or odd.
+    Calculates the sum of digits of a given number.
+    Fetches fun facts about the number using the Numbers API.
+    Returns JSON responses that can be easily integrated with other services.
+    Handles CORS for cross-origin requests, making it suitable for web and mobile apps.
 
-## Technologies Used
-- **Python** 🐍  
-- **FastAPI** 🚀  
-- **Uvicorn** (for running the ASGI server)  
-- **CORS Middleware** (for handling cross-origin requests)  
+🛠️ Technology Stack
 
----
+    Programming Language: Python
+    Framework: Flask
+    Deployment: AWS EC2 (Ubuntu)
+    Version Control: GitHub
+    API Hosting: Publicly accessible through EC2's public IP.
 
-## Installation & Setup
+⚙️ Setup Instructions
+Step 1: Install Required Packages
 
-### 1️⃣ Clone the Repository
-```bash
-git clone https://github.com/Ebube101/number-classification-api.git
-cd number-classification-api
-```
+Before setting up the application, you need to install some required packages.
 
-### 2️⃣ Set Up a Virtual Environment
-```bash
-python -m venv venv
-source venv/bin/activate  # macOS/Linux
-venv\Scripts\activate     # Windows
-```
+sudo apt update
+sudo apt install python3-venv -y
 
-### 3️⃣ Install Dependencies
-```bash
-pip install -r requirements.txt
-```
+Step 2: Create a Virtual Environment
 
----
+Next, create a virtual environment to isolate the project dependencies.
 
-## Running the API Locally
+python3 -m venv venv
 
-Run the FastAPI application using Uvicorn:
-```bash
-uvicorn main:app --host 0.0.0.0 --port 8000
-```
-Your API will now be accessible at:
+This will create a folder named venv, where Python and pip will work independently.
+Step 3: Activate the Virtual Environment
 
-📌 **Local:** `http://127.0.0.1:8000`  
-📌 **Swagger UI:** `http://127.0.0.1:8000/docs` (API documentation)  
-📌 **ReDoc UI:** `http://127.0.0.1:8000/redoc` (Alternative API documentation)
+Activate the virtual environment using the following command:
 
----
+source venv/bin/activate
 
-## API Endpoints
+Once activated, your terminal should show (venv) at the start of the line, indicating you're in the virtual environment.
+Step 4: Install Dependencies
 
-### 🟢 `GET /api/classify-number`
-Classifies a number and returns its properties.
+Now, install the necessary dependencies for the project.
 
-#### **Request Parameters**
-| Parameter | Type  | Required | Description |
-|-----------|-------|----------|-------------|
-| `number`  | `int` | ✅ Yes  | The number to classify |
+pip install flask requests
 
-#### **Example Request**
-```bash
-curl -X 'GET' 'http://127.0.0.1:8000/api/classify-number?number=28' -H 'accept: application/json'
-```
+⚡ Running the API
 
-#### **Example Response**
-```json
+Once the setup is complete, you can run the API.
+Running the API in Foreground Mode
+
+Run the API in the terminal as follows:
+
+sudo venv/bin/python number_api.py
+
+This will keep the API running as long as the terminal session is active.
+Running the API in Detached Mode (Background)
+
+To ensure the API keeps running even if the terminal is closed, you can run it in the background:
+
+sudo nohup venv/bin/python number_api.py &
+
+Logs are saved in the nohup.out file.
+Stopping the API
+
+If you need to stop the API, you can do so by finding the process ID and killing it:
+
+ps aux | grep number_api.py
+sudo kill <process_id>
+
+📡 API Endpoint
+
+Once the API is running, you can make a request to the endpoint:
+
+URL: http://34.234.104.218/api/classify-number?number=371
+
+Method: GET
+✅ Success Response (200 OK)
+
+When a valid number is provided, the API returns a JSON response with the mathematical properties and a fun fact about the number:
+
 {
-  "number": 28,
+  "digit_sum": 11,
+  "fun_fact": "371 is a narcissistic number.",
+  "is_perfect": false,
   "is_prime": false,
-  "is_perfect": true,
-  "properties": ["perfect"],
-  "digit_sum": 10,
-  "fun_fact": "28 is a perfect number."
+  "number": 371,
+  "properties": [
+    "armstrong",
+    "odd"
+  ]
 }
-```
 
----
+http://34.234.104.218/api/classify-number?number=abc
+❌ Error Response (400 Bad Request)
 
-## Deployment on AWS EC2
+If an invalid number is passed, the API will return an error message:
 
-### 1️⃣ Transfer Files to EC2 (From Local Machine)
-Use SCP to copy your project to the EC2 instance:
-```bash
-scp -i "your-key.pem" -r number-classification-api ubuntu@your-ec2-ip:/home/ubuntu/
-```
+{
+  "error": true,
+  "number": "abc"
+}
 
-### 2️⃣ SSH into EC2
-```bash
-ssh -i "your-key.pem" ubuntu@your-ec2-ip
-```
+💡 Troubleshooting
+Issue: Externally Managed Environment Error
 
-### 3️⃣ Install Dependencies on EC2
-```bash
-cd number-classification-api
-pip install -r requirements.txt
-```
+Problem: This error occurs because your Python environment is externally managed, which restricts system-wide package installations using pip.
 
-### 4️⃣ Run the API on EC2
-```bash
-uvicorn main:app --host 0.0.0.0 --port 8000
-```
-To keep it running even after logout, use:
-```bash
-nohup uvicorn main:app --host 0.0.0.0 --port 8000 &
-```
+Solution:
 
----
+    Install the virtual environment:
 
-## Troubleshooting
-- **Port Already in Use**  
-  🔹 Kill the existing process:  
-  ```bash
-  sudo lsof -i :8000
-  sudo kill -9 <PID>
-  ```
-- **CORS Issues?**  
-  🔹 Ensure CORS middleware is included in `main.py`:  
-  ```python
-  from fastapi.middleware.cors import CORSMiddleware
-  app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
-  ```
-- **502 Bad Gateway on AWS?**  
-  🔹 Check if Uvicorn is running and accessible via `your-ec2-ip:8000`. If necessary, update your security group to allow inbound traffic on port 8000.
+sudo apt update
+sudo apt install python3-venv -y
+
+Create and activate the virtual environment:
+
+python3 -m venv venv
+source venv/bin/activate
+
+Install dependencies:
+
+    pip install flask requests
+
+Issue: API Stops When Terminal Closes
+
+Problem: By default, the API stops when the terminal session is closed.
+
+Solution: To prevent this, run the API using nohup so it stays active even after the terminal session ends:
+
+sudo nohup venv/bin/python number_api.py &
+
+💻 Code Explanation
+
+The code for the API is structured as follows:
+Flask Setup
+
+    Flask is a lightweight Python micro-framework that simplifies the process of building APIs.
+
+Helper Functions
+
+    is_prime(n): Checks if a number is prime.
+    is_armstrong(n): Checks if the number is an Armstrong (narcissistic) number.
+    is_perfect(n): Checks if the number is a perfect number.
+    get_fun_fact(number): Fetches a fun fact from the Numbers API for a given number.
+
+API Endpoint
+
+    The API listens for GET requests at /api/classify-number?number=371.
+    The endpoint validates the input, checks the properties of the number, and returns a JSON response with the classification, sum of digits, and a fun fact.
+
+Deployment Setup
+
+    host='0.0.0.0' makes the API publicly accessible, allowing it to be accessed from any IP.
+    port=80 runs the API on the default HTTP port (80).
+
+📁 Code
+
+from flask import Flask, request, jsonify
+import requests
+
+app = Flask(__name__)
+
+# Function to check if a number is prime
+def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(n ** 0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+# Function to check if a number is an Armstrong number
+def is_armstrong(n):
+    num_str = str(n)
+    power = len(num_str)
+    return n == sum(int(digit) ** power for digit in num_str)
+
+# Function to check if a number is perfect
+def is_perfect(n):
+    return n == sum(i for i in range(1, n) if n % i == 0)
+
+# Function to get a fun fact from Numbers API
+def get_fun_fact(number):
+    try:
+        response = requests.get(f'http://numbersapi.com/{number}/math?json')
+        if response.status_code == 200:
+            return response.json().get('text')
+    except:
+        return "No fun fact available."
+
+@app.route('/api/classify-number', methods=['GET'])
+def classify_number():
+    number = request.args.get('number')
+
+    # Input validation
+    if not number or not number.isdigit():
+        return jsonify({"number": number, "error": True}), 400
+
+    number = int(number)
+    
+    properties = []
+    if is_armstrong(number):
+        properties.append("armstrong")
+    properties.append("even" if number % 2 == 0 else "odd")
+
+    result = {
+        "number": number,
+        "is_prime": is_prime(number),
+        "is_perfect": is_perfect(number),
+        "properties": properties,
+        "digit_sum": sum(int(d) for d in str(number)),
+        "fun_fact": get_fun_fact(number)
+    }
+
+    return jsonify(result)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8000)  # Make the API publicly accessible
+
